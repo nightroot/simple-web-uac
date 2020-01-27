@@ -12,7 +12,7 @@ const router =new Router({
       name: 'HelloWorld',
       component: HelloWorld
     }, {
-      path: '/:system/:moudle/:method',
+      path: '/:system/:menu/:moudle',
       name: 'Dynamic',
       component: Dynamic,
       meta: { title: "动态渲染" }

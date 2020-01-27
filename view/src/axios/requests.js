@@ -87,8 +87,9 @@ function post(requrl, reqparam) {
     timestamp: timestamp,
     // 因为使用分模块的vuex来保存，所以我引入store来获取token
     token: store.state.user.token,
+    // token: "1234567890qwertyuiopasdfghjklzxcvbnm",//临时用token
     // 这里我们规定业务数据要转成字符串
-    data: reqparam
+    data: reqparam==undefined?"":reqparam
   }
   // 执行并返回promise
   return Axios({

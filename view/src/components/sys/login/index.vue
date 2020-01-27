@@ -2,19 +2,17 @@
   <div id="login">
     <h1>{{ result }}</h1>
     <div>
-      <p>账号：<input
-          type="text"
-          name="usercode"
-          size="10"
-          ref="usercode"
-        ></p>
-      <p>密码：<input
-          type="password"
-          name="password"
-          size="10"
-          ref="password"
-        ></p>
-      <p><button @click="login">确定</button></p>
+      <p>
+        账号：
+        <input type="text" name="usercode" size="10" ref="usercode" />
+      </p>
+      <p>
+        密码：
+        <input type="password" name="password" size="10" ref="password" />
+      </p>
+      <p>
+        <button @click="login">确定</button>
+      </p>
     </div>
   </div>
 </template>
@@ -30,8 +28,9 @@ export default {
       result: "示例数据"
     };
   },
-  created:function(){//加载函数
-          this.$emit("changetitle", "后台登录");    
+  created: function() {
+    //加载函数
+    this.$emit("changetitle", "后台登录");
   },
   methods: {
     //登录事件
@@ -41,8 +40,12 @@ export default {
         password: (this.result1 = this.$refs.password.value)
       };
       post("/sys/authLogin", param).then(result => {
-        if (result.islogin === "1") {
+        if (result[0].islogin === "1") {
           // iView.Message.success("登录成功");
+          // 配置已经登录的用户信息
+          this.$store.commit("setToken", result[0].token);
+          this.$store.commit("setUsercode", result[0].usercode);
+          this.$store.commit("setUsername", result[0].username);
           this.$emit("changelink", "/sys/admin/index");
         } else {
           iView.Message.warning("账号或者密码错误");

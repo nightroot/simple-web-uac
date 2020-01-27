@@ -39,51 +39,7 @@
 </style><template>
   <div class="layout">
     <Layout style="  width: 100%;  height: 100%;">
-      <!-- <img src="@/assets/bg.jpg" alt=""> -->
       <Sider style="  width: 100%;  height: 100%;" hide-trigger :style="{background: '#515a6e'}">
-        <!-- <Menu
-          @on-select="menuSelect"
-          accordion
-          active-name="index"
-          theme="dark"
-          width="auto"
-          :open-names="['index']"
-        >
-          <div class="logo-nav">
-            <div style="width:48px">
-              <img src="@/assets/img/supply.png" width="48" height="48" align="left" alt />
-            </div>
-            <div style="position: absolute; top: 15px;left:60px;">后台管理系统</div>
-          </div>
-          <MenuItem name="index">首页</MenuItem>
-          <Submenu name="1">
-            <template slot="title">
-              <Icon type="ios-navigate"></Icon>Item 1
-            </template>
-            <Submenu name="1-1">
-            <template slot="title">
-              <Icon type="ios-navigate"></Icon>Item 1
-            </template>
-              <MenuItem name="1-1-1">Option 2</MenuItem>
-              <MenuItem name="1-1-2">Option 3</MenuItem>
-            </Submenu>
-            <MenuItem name="1-2">Option 2</MenuItem>
-          </Submenu>
-          <Submenu name="2">
-            <template slot="title">
-              <Icon type="ios-keypad"></Icon>Item 2
-            </template>
-            <MenuItem name="2-1">Option 1</MenuItem>
-            <MenuItem name="2-2">Option 2</MenuItem>
-          </Submenu>
-          <Submenu name="3">
-            <template slot="title">
-              <Icon type="ios-analytics"></Icon>Item 3
-            </template>
-            <MenuItem name="3-1">Option 1</MenuItem>
-            <MenuItem name="3-2">Option 2</MenuItem>
-          </Submenu>
-        </Menu>-->
         <Menu @on-select="menuSelect" accordion active-name="index" theme="dark" width="auto">
           <div class="logo-nav">
             <div style="width:48px">
@@ -91,10 +47,15 @@
             </div>
             <div style="position: absolute; top: 15px;left:60px;">后台管理系统</div>
           </div>
-          <MenuItem name="index">首页</MenuItem>
+          <!-- <MenuItem name="sysadminhome" key="sysadminhome">首页</MenuItem> -->
+          <MenuItem
+            v-for="topmenu in createtopmenu()"
+            :name="topmenu.code"
+            :key="topmenu.code"
+          >{{topmenu.title}}</MenuItem>
           <Submenu v-for="menu in createmenu()" :key="menu.code" :name="menu.code">
             <template slot="title">
-              <Icon type="ios-navigate"></Icon>
+              <Icon :type="menu.icon"></Icon>
               {{menu.title}}
             </template>
             <MenuItem
@@ -103,43 +64,43 @@
               :name="item.code"
             >{{item.title}}</MenuItem>
           </Submenu>
-          <!-- <Submenu name="1">
-            <template slot="title">
-              <Icon type="ios-navigate"></Icon>Item 1
-            </template>
-            <Submenu name="1-1">
-            <template slot="title">
-              <Icon type="ios-navigate"></Icon>Item 1
-            </template>
-              <MenuItem name="1-1-1">Option 2</MenuItem>
-              <MenuItem name="1-1-2">Option 3</MenuItem>
-            </Submenu>
-            <MenuItem name="1-2">Option 2</MenuItem>
-          </Submenu>-->
         </Menu>
       </Sider>
       <Layout>
-        <Header style="padding:0">
-          <!-- 头像 -->
+        <Header style="padding:0;Display:inline-block">
           <Menu mode="horizontal" theme="light" active-name="1" style="height:64px">
             <div class="layout-nav">
               <MenuItem name="1">
-                <Icon type="ios-navigate"></Icon>Item 1
+                <Icon type="ios-navigate"></Icon>系统一
               </MenuItem>
               <MenuItem name="2">
-                <Icon type="ios-keypad"></Icon>Item 2
+                <Icon type="ios-keypad"></Icon>系统二
               </MenuItem>
               <MenuItem name="3">
-                <Icon type="ios-analytics"></Icon>Item 3
+                <Icon type="ios-analytics"></Icon>系统三
               </MenuItem>
-              <MenuItem name="4">
-                <Icon type="ios-paper"></Icon>Item 4
+              <MenuItem name="4" style="float:right">
+              <!-- 头像 -->
+                <Avatar style="background-color: #87d068" icon="ios-person" size="large" />
+                <Dropdown trigger="click" @on-click="avatarmenu">
+                  <a href="javascript:void(0)">
+                    {{this.$store.state.user.username}}
+                    <Icon type="ios-arrow-down"></Icon>
+                  </a>
+                  <DropdownMenu slot="list">
+                    <DropdownItem name="person">个人资料</DropdownItem>
+                    <DropdownItem name="password">修改密码</DropdownItem>
+                    <DropdownItem name="logout">登出系统</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
               </MenuItem>
             </div>
           </Menu>
         </Header>
         <Layout>
-          <tabCom ref="tab">12342134</tabCom>
+          <keep-alive>
+            <tabCom ref="tab"></tabCom>
+          </keep-alive>
         </Layout>
       </Layout>
       <!-- <Layout :style="{padding: '0 24px 24px'}">
@@ -156,51 +117,79 @@
 <script>
 import tabCom from "./tab.vue";
 import post from "@/axios/requests";
+import iView from "iview";
 export default {
+  name: "Index",
   components: { tabCom },
   data() {
     return {
       title: "后台登录",
-      //   result: "示例数据",// 返回
-      // isCollapsed: false // 设为true后在左侧菜单会隐藏
+      avatar: "",
       menus: []
     };
   },
-  created: function() {//加载函数
+  mounted: function() {
     //更改title
     this.$emit("changetitle", this.title);
     //请求菜单数据
-    post("/sys/demo/menu", "").then(result => {
+    post("/sys/demo/menu").then(result => {
       this.menus = result;
     });
+    this.avatar = require("@/assets/img/avatar/admin.jpg").default;
   },
   methods: {
     //创建菜单
     createmenu: function() {
       let tmp = [];
-      let tmpdata=this.menus
-      this.menus.forEach(item=>{
-        if(item.parent=='-1'){
-          item.children=[]
-          tmp.push(item)
-          this.menus.forEach(child=>{
-            if(child.parent==item.id){
-              item.children.push(child)
+      let tmpdata = this.menus;
+      this.menus.forEach(item => {
+        if (item.parent == "-1") {
+          item.children = [];
+          tmp.push(item);
+          this.menus.forEach(child => {
+            if (child.parent == item.id) {
+              item.children.push(child);
             }
-          })
+          });
         }
-      })
-      // console.log(tmp)
-      return tmp;
+      });
+      return tmp.filter(item => item.children.length > 0);
+    },
+    createtopmenu: function() {
+      let tmp = [];
+      let tmpdata = this.menus;
+      this.menus.forEach(item => {
+        if (item.parent == "-1") {
+          item.children = [];
+          tmp.push(item);
+          this.menus.forEach(child => {
+            if (child.parent == item.id) {
+              item.children.push(child);
+            }
+          });
+        }
+      });
+      return tmp.filter(item => item.children.length == 0);
     },
     menuSelect: function(name) {
       //菜单单击事件
-      let onmenu=this.menus.filter(v=>v.code==name)[0]
-      // console.log(onmenu)
-      // console.log(onmenu.code,onmenu.title)
-      // this.$refs.tab.addtabname = onmenu.title;
-      // this.$refs.tab.addtabcode = onmenu.code;
-      this.$refs.tab.addtab=onmenu
+      let onmenu = this.menus.filter(v => v.code == name)[0];
+      this.$refs.tab.addtab = onmenu;
+    },
+    avatarmenu:function(type){
+      switch(type) {
+        case "person":
+            console.log(type)
+            break;
+        case "password":
+            console.log(type)
+            break;
+        case "logout":
+            console.log(type)
+            break;
+        default:
+            iView.Message.warning("调用失败");
+} 
     }
   }
 };

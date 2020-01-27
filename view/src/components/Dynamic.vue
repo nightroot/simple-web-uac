@@ -16,11 +16,11 @@ export default {
   // props: ["0"],//父组件没有参数传入
   data() {
     let system = this.$route.params.system || "",
+      menu = this.$route.params.menu || "",
       moudle = this.$route.params.moudle || "",
-      method = this.$route.params.method || "",
       path = "";
-    if (system && moudle && method) {
-      path = "/" + system + "/" + moudle + "/" + method;
+    if (system && menu && moudle) {
+      path = "/" + system + "/" + menu + "/" + moudle;
     } else {
       path = "/share/404";
     }
@@ -28,7 +28,7 @@ export default {
       params:[],//子组件返回参数
       tourl: path,//跳转url
       title: "动态系统", //监听跳转的title
-      compName: this.name //本组件名
+      // compName: this.name //本组件名
     };
   },
   computed: {
