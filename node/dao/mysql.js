@@ -7,4 +7,5 @@ mysql = {
     port:3306,//端口
 } 
 
+
 module.exports = mysql; //接口
