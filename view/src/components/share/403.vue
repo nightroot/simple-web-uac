@@ -6,10 +6,9 @@
 
 <script>
 export default {
-  name: "HelloWorld",
   data() {
     return {
-      msg: "欢迎来到【李晓龙】&【牟春学】的毕设系统"
+      msg: "403页面"
     };
   }
 };

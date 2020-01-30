@@ -8,21 +8,6 @@
   width: 100%;
   height: 100%;
 }
-/* .layout-logo {
-  width:200px;
-  height: 64px;
-  background: #5b6270;
-  border-radius: 3px;
-  float: left;
-  position: relative;
-  top: 0;
-  left: 0;
-}
-.layout-nav {
-  width: 420px;
-  margin: 0 auto;
-  margin-right: 20px;
-} */
 .logo-nav {
   width: 200px;
   height: 64px;
@@ -47,7 +32,6 @@
             </div>
             <div style="position: absolute; top: 15px;left:60px;">后台管理系统</div>
           </div>
-          <!-- <MenuItem name="sysadminhome" key="sysadminhome">首页</MenuItem> -->
           <MenuItem
             v-for="topmenu in createtopmenu()"
             :name="topmenu.code"
@@ -80,7 +64,7 @@
                 <Icon type="ios-analytics"></Icon>系统三
               </MenuItem>
               <MenuItem name="4" style="float:right">
-              <!-- 头像 -->
+                <!-- 头像 -->
                 <Avatar style="background-color: #87d068" icon="ios-person" size="large" />
                 <Dropdown trigger="click" @on-click="avatarmenu">
                   <a href="javascript:void(0)">
@@ -125,6 +109,7 @@ export default {
     return {
       title: "后台登录",
       avatar: "",
+      islogin: 1,
       menus: []
     };
   },
@@ -138,7 +123,7 @@ export default {
     this.avatar = require("@/assets/img/avatar/admin.jpg").default;
   },
   methods: {
-    //创建菜单
+    //创建有子目录的菜单
     createmenu: function() {
       let tmp = [];
       let tmpdata = this.menus;
@@ -155,6 +140,7 @@ export default {
       });
       return tmp.filter(item => item.children.length > 0);
     },
+    //创建没有子目录的菜单
     createtopmenu: function() {
       let tmp = [];
       let tmpdata = this.menus;
@@ -172,24 +158,34 @@ export default {
       return tmp.filter(item => item.children.length == 0);
     },
     menuSelect: function(name) {
-      //菜单单击事件
+      //菜单单击事件，增加/切换tab
       let onmenu = this.menus.filter(v => v.code == name)[0];
       this.$refs.tab.addtab = onmenu;
     },
-    avatarmenu:function(type){
-      switch(type) {
+    avatarmenu: function(type) {
+
+      switch (type) {
         case "person":
-            console.log(type)
-            break;
+          iView.Message.success("person事件");
+          break;
         case "password":
-            console.log(type)
-            break;
+          iView.Message.success("password事件");
+          break;
         case "logout":
-            console.log(type)
-            break;
+          post("/sys/logout").then(result => {
+            if (result[0].islogout == 1) {
+              this.$store.commit("clear");
+              iView.Message.success("登出成功！");
+              this.$emit("changelink", "/sys/login/index");
+              // 跳转登录或者首页
+            } else {
+              iView.Message.warning("登出失败！");
+            }
+          });
+          break;
         default:
-            iView.Message.warning("调用失败");
-} 
+          iView.Message.warning("调用失败");
+      }
     }
   }
 };

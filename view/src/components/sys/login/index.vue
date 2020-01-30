@@ -29,6 +29,9 @@ export default {
     };
   },
   created: function() {
+    if (this.$store.state.user.token.length > 0) {//首页跳转
+      this.$emit("changelink", "/sys/admin/index");
+    }
     //加载函数
     this.$emit("changetitle", "后台登录");
   },
@@ -41,11 +44,10 @@ export default {
       };
       post("/sys/authLogin", param).then(result => {
         if (result[0].islogin === "1") {
-          // iView.Message.success("登录成功");
-          // 配置已经登录的用户信息
           this.$store.commit("setToken", result[0].token);
           this.$store.commit("setUsercode", result[0].usercode);
           this.$store.commit("setUsername", result[0].username);
+          this.$store.commit("setPermits", result[0].permits);
           this.$emit("changelink", "/sys/admin/index");
         } else {
           iView.Message.warning("账号或者密码错误");
