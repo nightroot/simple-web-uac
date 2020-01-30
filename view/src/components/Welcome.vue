@@ -9,7 +9,7 @@ export default {
   name: "Welcome",
   data() {
     return {
-      msg: "欢迎来到【XX】&【XX】的毕设系统"
+      msg: "simple-web-uac前端示例（虽然控制并不应该放在前端"
     };
   }
 };
